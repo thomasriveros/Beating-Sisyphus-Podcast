@@ -16,6 +16,8 @@
     "allowJs": true,
     "jsx": "react-jsx",
     "types": ["vite/client"],
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "paths": {
       "@/*": [
         "./*"

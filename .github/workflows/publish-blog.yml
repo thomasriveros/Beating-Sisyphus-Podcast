@@ -1,0 +1,42 @@
+name: Publish Blog Post from Issue
+
+on:
+  issues:
+    types: [opened, edited, closed, labeled, unlabeled]
+
+jobs:
+  publish:
+    # Run only if the issue has the 'blog-post' label
+    if: contains(github.event.issue.labels.*.name, 'blog-post')
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # Allows committing back to repository
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Publish Script
+        run: node scripts/publish-post.js
+
+      - name: Commit & Push Changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/posts.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Publish/Update post from Issue #${{ github.event.issue.number }}" && git push)
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        run: npx gh-pages -d dist -u "github-actions-bot <support+actions@github.com>" -r "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
