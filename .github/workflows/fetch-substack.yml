@@ -25,13 +25,30 @@ jobs:
       - name: Fetch and Parse Substack RSS Feed
         run: |
           python3 - <<'EOF'
-          import feedparser, json
+          import urllib.request, re, feedparser, json
 
-          feed = feedparser.parse('https://beatingsisyphus.substack.com/feed')
+          # 1. Fetch raw RSS bytes
+          req = urllib.request.Request(
+              'https://beatingsisyphus.substack.com/feed',
+              headers={'User-Agent': 'Mozilla/5.0'}
+          )
+          with urllib.request.urlopen(req, timeout=30) as resp:
+              raw = resp.read().decode('utf-8', errors='replace')
 
-          if feed.bozo and not feed.entries:
-              raise RuntimeError(f"Feed parse failed: {feed.bozo_exception}")
+          # 2. Strip invalid XML 1.0 characters (the root cause of the parse error)
+          #    Valid XML chars: #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD]
+          clean = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f\ufffe\uffff]', '', raw)
 
+          print(f"Raw size: {len(raw)} | Cleaned size: {len(clean)}")
+
+          # 3. Parse the cleaned XML string with feedparser
+          feed = feedparser.parse(clean)
+          print(f"Bozo: {feed.bozo} | Entries: {len(feed.entries)}")
+
+          if not feed.entries:
+              raise RuntimeError(f"No entries parsed. Bozo exception: {feed.bozo_exception}")
+
+          # 4. Build JSON
           articles = []
           for entry in feed.entries:
               articles.append({
