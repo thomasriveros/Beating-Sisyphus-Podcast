@@ -9,8 +9,10 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
+    "update-feed": "node --input-type=commonjs < scripts/fetch-feed.js",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "update-and-deploy": "npm run update-feed && git add public/substack-feed.json && git diff --staged --quiet || git commit -m 'chore: refresh Substack feed' && git push && npm run deploy"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",
