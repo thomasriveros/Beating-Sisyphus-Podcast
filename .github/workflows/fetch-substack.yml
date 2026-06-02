@@ -19,36 +19,41 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Download Substack RSS Feed
+        run: |
+          curl -s -L \
+            -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" \
+            -H "Accept: application/rss+xml, application/xml, text/xml, */*" \
+            -H "Accept-Language: en-US,en;q=0.9" \
+            -H "Cache-Control: no-cache" \
+            --retry 3 --retry-delay 5 \
+            "https://beatingsisyphus.substack.com/feed" \
+            -o /tmp/feed.xml
+          echo "Downloaded $(wc -c < /tmp/feed.xml) bytes"
+          head -c 200 /tmp/feed.xml
+
       - name: Install feedparser
         run: pip install feedparser
 
-      - name: Fetch and Parse Substack RSS Feed
+      - name: Parse Feed and Write JSON
         run: |
           python3 - <<'EOF'
-          import urllib.request, re, feedparser, json
+          import re, feedparser, json
 
-          # 1. Fetch raw RSS bytes
-          req = urllib.request.Request(
-              'https://beatingsisyphus.substack.com/feed',
-              headers={'User-Agent': 'Mozilla/5.0'}
-          )
-          with urllib.request.urlopen(req, timeout=30) as resp:
-              raw = resp.read().decode('utf-8', errors='replace')
+          # Read the file curl downloaded
+          with open('/tmp/feed.xml', 'r', encoding='utf-8', errors='replace') as f:
+              raw = f.read()
 
-          # 2. Strip invalid XML 1.0 characters (the root cause of the parse error)
-          #    Valid XML chars: #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD]
+          # Strip invalid XML 1.0 control characters
           clean = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f\ufffe\uffff]', '', raw)
+          print(f"Raw: {len(raw)} bytes → Cleaned: {len(clean)} bytes")
 
-          print(f"Raw size: {len(raw)} | Cleaned size: {len(clean)}")
-
-          # 3. Parse the cleaned XML string with feedparser
           feed = feedparser.parse(clean)
           print(f"Bozo: {feed.bozo} | Entries: {len(feed.entries)}")
 
           if not feed.entries:
-              raise RuntimeError(f"No entries parsed. Bozo exception: {feed.bozo_exception}")
+              raise RuntimeError(f"No entries parsed. Bozo: {feed.bozo_exception}")
 
-          # 4. Build JSON
           articles = []
           for entry in feed.entries:
               articles.append({
