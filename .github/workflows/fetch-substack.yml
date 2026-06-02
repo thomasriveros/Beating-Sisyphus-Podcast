@@ -19,50 +19,36 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Fetch Substack RSS Feed
-        run: |
-          curl -s "https://beatingsisyphus.substack.com/feed" \
-            -H "User-Agent: Mozilla/5.0" \
-            -o /tmp/feed.xml
-          echo "Feed fetched. Size: $(wc -c < /tmp/feed.xml) bytes"
+      - name: Install feedparser
+        run: pip install feedparser
 
-      - name: Parse RSS to JSON
+      - name: Fetch and Parse Substack RSS Feed
         run: |
           python3 - <<'EOF'
-          import xml.etree.ElementTree as ET
-          import json, re
+          import feedparser, json
 
-          NS = {
-            'content': 'http://purl.org/rss/1.0/modules/content/',
-            'dc':      'http://purl.org/dc/elements/1.1/',
-          }
+          feed = feedparser.parse('https://beatingsisyphus.substack.com/feed')
 
-          tree = ET.parse('/tmp/feed.xml')
-          root = tree.getroot()
-          channel = root.find('channel')
+          if feed.bozo and not feed.entries:
+              raise RuntimeError(f"Feed parse failed: {feed.bozo_exception}")
 
           articles = []
-          for item in channel.findall('item'):
-            title   = (item.findtext('title') or '').strip()
-            link    = (item.findtext('link')  or '').strip()
-            pubDate = (item.findtext('pubDate') or '').strip()
-            desc    = (item.findtext('description') or '').strip()
-            author  = (item.findtext('dc:creator', NS) or
-                       item.findtext('author') or '').strip()
-
-            articles.append({
-              'title':   title,
-              'link':    link,
-              'pubDate': pubDate,
-              'description': desc,
-              'author':  author,
-            })
+          for entry in feed.entries:
+              articles.append({
+                  'title':       entry.get('title', '').strip(),
+                  'link':        entry.get('link', '').strip(),
+                  'pubDate':     entry.get('published', '').strip(),
+                  'description': entry.get('summary', '').strip(),
+                  'author':      entry.get('author', '').strip(),
+              })
 
           out = {'status': 'ok', 'items': articles}
           with open('public/substack-feed.json', 'w') as f:
-            json.dump(out, f, ensure_ascii=False, indent=2)
+              json.dump(out, f, ensure_ascii=False, indent=2)
 
-          print(f"Wrote {len(articles)} articles to public/substack-feed.json")
+          print(f"Wrote {len(articles)} articles:")
+          for a in articles:
+              print(f"  - {a['title'][:70]}")
           EOF
 
       - name: Commit Feed JSON
