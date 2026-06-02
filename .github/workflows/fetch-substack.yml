@@ -1,0 +1,88 @@
+name: Fetch Substack Feed
+
+on:
+  schedule:
+    # Runs every day at 6am UTC — picks up any new articles automatically
+    - cron: '0 6 * * *'
+  push:
+    branches: [main]
+  workflow_dispatch: # Allow manual trigger from GitHub Actions UI
+
+jobs:
+  fetch-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Fetch Substack RSS Feed
+        run: |
+          curl -s "https://beatingsisyphus.substack.com/feed" \
+            -H "User-Agent: Mozilla/5.0" \
+            -o /tmp/feed.xml
+          echo "Feed fetched. Size: $(wc -c < /tmp/feed.xml) bytes"
+
+      - name: Parse RSS to JSON
+        run: |
+          python3 - <<'EOF'
+          import xml.etree.ElementTree as ET
+          import json, re
+
+          NS = {
+            'content': 'http://purl.org/rss/1.0/modules/content/',
+            'dc':      'http://purl.org/dc/elements/1.1/',
+          }
+
+          tree = ET.parse('/tmp/feed.xml')
+          root = tree.getroot()
+          channel = root.find('channel')
+
+          articles = []
+          for item in channel.findall('item'):
+            title   = (item.findtext('title') or '').strip()
+            link    = (item.findtext('link')  or '').strip()
+            pubDate = (item.findtext('pubDate') or '').strip()
+            desc    = (item.findtext('description') or '').strip()
+            author  = (item.findtext('dc:creator', NS) or
+                       item.findtext('author') or '').strip()
+
+            articles.append({
+              'title':   title,
+              'link':    link,
+              'pubDate': pubDate,
+              'description': desc,
+              'author':  author,
+            })
+
+          out = {'status': 'ok', 'items': articles}
+          with open('public/substack-feed.json', 'w') as f:
+            json.dump(out, f, ensure_ascii=False, indent=2)
+
+          print(f"Wrote {len(articles)} articles to public/substack-feed.json")
+          EOF
+
+      - name: Commit Feed JSON
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/substack-feed.json
+          git diff --staged --quiet || git commit -m "chore: refresh Substack feed [skip ci]"
+          git push
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        run: npx gh-pages -d dist -u "github-actions-bot <support+actions@github.com>" -r "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
