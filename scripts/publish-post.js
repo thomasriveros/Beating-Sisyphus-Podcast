@@ -14,6 +14,12 @@ const action = event.action;
 
 console.log(`Action: ${action}, Issue: #${issue.number}`);
 
+const isBlogPost = issue.labels && issue.labels.some(l => l.name === 'blog-post');
+if (!isBlogPost) {
+  console.log("This issue does not have the 'blog-post' label. Skipping.");
+  process.exit(0);
+}
+
 const postsFilePath = path.join(process.cwd(), 'src/posts.json');
 let posts = [];
 try {

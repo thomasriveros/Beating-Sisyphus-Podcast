@@ -6,8 +6,6 @@ on:
 
 jobs:
   publish:
-    # Run only if the issue has the 'blog-post' label
-    if: contains(github.event.issue.labels.*.name, 'blog-post')
     runs-on: ubuntu-latest
 
     permissions:
