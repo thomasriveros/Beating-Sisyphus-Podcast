@@ -4,6 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Beating Sisyphus Podcast</title>
+
+    <!-- Security Headers -->
+    <!-- CSP: only allows scripts/styles/frames from known trusted sources -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline';
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: https:;
+      frame-src https://embed.podcasts.apple.com https://open.spotify.com https://www.youtube.com;
+      connect-src 'self';
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      frame-ancestors 'none';
+    " />
+    <!-- Prevent MIME-type sniffing -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <!-- Don't send the full URL as referrer to third-party sites -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <!-- Restrict browser feature access -->
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()" />
   </head>
   <body>
     <div id="root"></div>
