@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Youtube, Headphones, Radio, Music2, Linkedin, ExternalLink, BookOpen, RefreshCw } from 'lucide-react';
+import { Youtube, Headphones, Radio, Music2, Linkedin, ExternalLink, BookOpen, RefreshCw, Mail } from 'lucide-react';
 
 // ─── Substack RSS Types ──────────────────────────────────────────────────────
 interface SubstackArticle {
@@ -367,23 +367,7 @@ export default function App() {
             <div className="h-px bg-vintage-border flex-1"></div>
           </div>
           <div className="max-w-3xl mx-auto">
-            <div className="bg-white rounded-2xl border border-vintage-border shadow-sm p-8 md:p-12 text-center">
-              <p className="font-serif text-lg italic text-vintage-black/70 mb-8 max-w-xl mx-auto">
-                Get episode insights, analysis, and reflections delivered directly to your inbox — free.
-              </p>
-              <iframe
-                src="https://beatingsisyphus.substack.com/embed"
-                width="100%"
-                height="150"
-                style={{ border: '1px solid var(--color-vintage-border)', borderRadius: '12px', background: 'white', maxWidth: '480px', margin: '0 auto', display: 'block' }}
-                frameBorder="0"
-                scrolling="no"
-                title="Subscribe to Beating Sisyphus on Substack"
-              />
-              <p className="mt-6 font-sans text-xs text-vintage-black/40 tracking-wide">
-                No spam. Unsubscribe anytime.
-              </p>
-            </div>
+            <NewsletterSignup />
           </div>
         </section>
 
@@ -398,6 +382,54 @@ export default function App() {
   );
 }
 
+// ─── Newsletter Signup Component ─────────────────────────────────────────────
+function NewsletterSignup() {
+  const [email, setEmail] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const url = `https://beatingsisyphus.substack.com/subscribe?email=${encodeURIComponent(email)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  return (
+    <div className="bg-white rounded-2xl border border-vintage-border shadow-sm p-8 md:p-12 text-center">
+      <div className="flex justify-center mb-6">
+        <div className="w-12 h-12 rounded-full bg-vintage-red/10 flex items-center justify-center">
+          <Mail size={22} className="text-vintage-red" />
+        </div>
+      </div>
+      <h3 className="font-serif text-2xl font-bold text-vintage-black mb-3">
+        Get the Newsletter
+      </h3>
+      <p className="font-serif text-base italic text-vintage-black/60 mb-8 max-w-md mx-auto">
+        Episode insights, analysis, and reflections — delivered free to your inbox.
+      </p>
+      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+        <input
+          id="newsletter-email"
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="your@email.com"
+          className="flex-1 px-5 py-3 rounded-full border border-vintage-border bg-vintage-cream text-vintage-black font-sans text-sm placeholder:text-vintage-black/30 focus:outline-none focus:border-vintage-red focus:ring-2 focus:ring-vintage-red/20 transition-all"
+        />
+        <button
+          type="submit"
+          className="px-7 py-3 rounded-full bg-vintage-red text-vintage-cream font-sans text-sm font-semibold uppercase tracking-wider hover:bg-vintage-black transition-colors duration-300 whitespace-nowrap cursor-pointer"
+        >
+          Subscribe
+        </button>
+      </form>
+      <p className="mt-5 font-sans text-xs text-vintage-black/40 tracking-wide">
+        Opens Substack to complete your free subscription. No spam, unsubscribe anytime.
+      </p>
+    </div>
+  );
+}
+
+// ─── Platform Link Component ──────────────────────────────────────────────────
 function PlatformLink({ href, icon, name }: { href: string, icon: React.ReactNode, name: string }) {
   return (
     <a 
