@@ -349,7 +349,7 @@ export default function App() {
               <div className="w-full max-w-[280px] mb-8 overflow-hidden rounded-2xl border border-vintage-border shadow-sm mx-auto md:mx-0 relative group bg-vintage-border/30">
                 <div className="absolute inset-0 bg-vintage-red/20 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
                 <img 
-                  src="/Casanova_Lourdes_.lc683_Johnson_DONE.jpg" 
+                  src={`${import.meta.env.BASE_URL}Casanova_Lourdes_.lc683_Johnson_DONE.jpg`} 
                   alt="Lourdes Casanova" 
                   className="w-full aspect-[4/5] object-cover grayscale group-hover:grayscale-0 transition-all duration-700 block"
                 />
@@ -372,7 +372,7 @@ export default function App() {
               <div className="w-full max-w-[280px] mb-8 overflow-hidden rounded-2xl border border-vintage-border shadow-sm mx-auto md:mx-0 relative group bg-vintage-border/30">
                 <div className="absolute inset-0 bg-vintage-red/20 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
                 <img 
-                  src="/Headshot.jpeg" 
+                  src={`${import.meta.env.BASE_URL}Headshot.jpeg`} 
                   alt="Thomas Riveros" 
                   className="w-full aspect-[4/5] object-cover grayscale group-hover:grayscale-0 transition-all duration-700 block"
                 />
