@@ -7,7 +7,9 @@
     <link rel="icon" type="image/png" href="/Beating%20Sisyphus%20Logo.png" />
 
     <!-- Security Headers -->
-    <!-- CSP: only allows scripts/styles/frames from known trusted sources -->
+    <!-- CSP via meta tag: controls scripts/styles/frames. -->
+    <!-- NOTE: frame-ancestors is intentionally omitted — it is ignored in meta tags per spec -->
+    <!-- and requires an HTTP response header (not possible on GitHub Pages without a proxy). -->
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
       script-src 'self' 'unsafe-inline';
@@ -18,8 +20,7 @@
       connect-src 'self';
       object-src 'none';
       base-uri 'self';
-      form-action 'self';
-      frame-ancestors 'none';
+      form-action https://beatingsisyphus.substack.com 'self';
     " />
     <!-- Prevent MIME-type sniffing -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
