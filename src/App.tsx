@@ -353,14 +353,8 @@ export default function App() {
               </div>
               <div className="flex items-center justify-between border-b border-vintage-border pb-4 mb-6">
                 <h3 className="font-serif text-2xl font-bold text-vintage-black">Daniel Kim</h3>
-                <a
-                  href="https://beatingsisyphus.substack.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-vintage-black/60 hover:text-vintage-red transition-colors"
-                  aria-label="Beating Sisyphus on Substack"
-                >
-                  <ExternalLink size={20} />
+                <a href="https://www.linkedin.com/in/danielykim36/" target="_blank" rel="noopener noreferrer" className="text-vintage-black/60 hover:text-vintage-red transition-colors">
+                  <Linkedin size={20} />
                 </a>
               </div>
               <div className="font-sans text-sm leading-relaxed text-vintage-black/80 space-y-4">
