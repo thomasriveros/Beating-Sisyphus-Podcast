@@ -296,7 +296,7 @@ export default function App() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-10">
             {/* Host 1 */}
             <div className="flex flex-col">
               <div className="w-full max-w-[280px] mb-8 overflow-hidden rounded-2xl border border-vintage-border shadow-sm mx-auto md:mx-0 relative group bg-vintage-border/30">
@@ -337,7 +337,35 @@ export default function App() {
                 </a>
               </div>
               <div className="font-sans text-sm leading-relaxed text-vintage-black/80 space-y-4">
-                <p>Thomas Riveros ’27 is an undergraduate at Cornell University majoring in economics with a minor in business. He is passionate about finance, emerging markets and macroeconomics. He is the co-host of “Beating Sisyphus,” a podcast that brings on experts from different industries to discuss how emerging markets succeed under pressure.</p>
+                <p>Thomas Riveros '27 is an undergraduate at Cornell University majoring in economics with a minor in business. He is passionate about finance, emerging markets and macroeconomics. He is the co-host of "Beating Sisyphus," a podcast that brings on experts from different industries to discuss how emerging markets succeed under pressure.</p>
+              </div>
+            </div>
+
+            {/* Host 3 — Daniel Kim */}
+            <div className="flex flex-col">
+              <div className="w-full max-w-[280px] mb-8 overflow-hidden rounded-2xl border border-vintage-border shadow-sm mx-auto md:mx-0 relative group bg-vintage-border/30">
+                <div className="absolute inset-0 bg-vintage-red/20 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
+                <img
+                  src={`${import.meta.env.BASE_URL}Daniel_Kim_Headshot-300x300-1.jpg`}
+                  alt="Daniel Kim"
+                  className="w-full aspect-[4/5] object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700 block"
+                />
+              </div>
+              <div className="flex items-center justify-between border-b border-vintage-border pb-4 mb-6">
+                <h3 className="font-serif text-2xl font-bold text-vintage-black">Daniel Kim</h3>
+                <a
+                  href="https://beatingsisyphus.substack.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-vintage-black/60 hover:text-vintage-red transition-colors"
+                  aria-label="Beating Sisyphus on Substack"
+                >
+                  <ExternalLink size={20} />
+                </a>
+              </div>
+              <div className="font-sans text-sm leading-relaxed text-vintage-black/80 space-y-4">
+                <p>Daniel Kim is a co-host of Beating Sisyphus and the lead behind the <a href="https://beatingsisyphus.substack.com" target="_blank" rel="noopener noreferrer" className="text-vintage-red hover:text-vintage-black underline decoration-vintage-red/30 hover:decoration-vintage-black transition-colors font-medium">Beating Sisyphus Substack</a>, where he spearheads written episode insights and analysis.</p>
+                <p>He is pursuing a B.S. in Applied Economics and Management at Cornell University with a Concentration in International Markets and Development, alongside minors in Chemistry and Law &amp; Society.</p>
               </div>
             </div>
           </div>
